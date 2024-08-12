@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<root>
+    
+<date><id>1</id><src>./meniu/8079c0581d33f2befdc829d26e59559de66469dfe0b83b94b28359820a8a77c1uaic.png</src><nume>lemon</nume><pret>3</pret><ingrediente>sdfg</ingrediente><gramaj>5</gramaj><view>view.php?id=1</view><edit>edit.php?id=1</edit><delete>delete.php?id=1</delete><confirm>return confirm("Are you sure you want to delete this item?")</confirm><back>index.php</back></date></root>
