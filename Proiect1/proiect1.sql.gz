@@ -1,0 +1,137 @@
+-- phpMyAdmin SQL Dump
+-- version 5.1.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: May 19, 2023 at 06:13 AM
+-- Server version: 10.4.22-MariaDB
+-- PHP Version: 8.1.2
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `proiect1`
+--
+
+DELIMITER $$
+--
+-- Procedures
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `adauga_produs` (IN `nume_prod` VARCHAR(255), IN `imagine` LONGBLOB, IN `tip` CHAR(1), IN `descriere` TEXT, IN `pret` DECIMAL(10,2), IN `stoc` INT, IN `tag` VARCHAR(255))  BEGIN
+  INSERT INTO produs (nume_prod, imagine, tip, descriere, pret, stoc, tag)
+  VALUES (nume_prod, imagine, tip, descriere, pret, stoc, tag);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_item` (IN `item_id` INT)  BEGIN
+    DECLARE image_path VARCHAR(255);
+    SELECT poza INTO image_path FROM produs WHERE id = item_id;
+    DELETE FROM produs WHERE id = item_id;
+    IF image_path IS NOT NULL THEN
+        SET @unlink_cmd = CONCAT('rm -f ', image_path);
+        PREPARE unlink_stmt FROM @unlink_cmd;
+        EXECUTE unlink_stmt;
+        DEALLOCATE PREPARE unlink_stmt;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_produs` (IN `id` INT, IN `nume_prod` VARCHAR(255), IN `poza` VARCHAR(255), IN `tip` CHAR(1), IN `descriere` TEXT, IN `pret` DECIMAL(10,2), IN `stoc` INT, IN `tag` VARCHAR(255))  BEGIN
+    UPDATE produs SET
+      nume_prod = nume_prod,
+      poza = poza,
+      tip = tip,
+      descriere = descriere,
+      pret = pret,
+      stoc = stoc,
+      tag = tag
+    WHERE id = id;
+  END$$
+
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `produs`
+--
+
+CREATE TABLE `produs` (
+  `id` int(11) NOT NULL,
+  `nume_prod` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `tip` varchar(100) CHARACTER SET latin1 NOT NULL,
+  `pret` int(11) NOT NULL,
+  `stoc` int(11) NOT NULL,
+  `descriere` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `poza` longblob NOT NULL,
+  `mime` varchar(255) NOT NULL,
+  `tag` varchar(255) NOT NULL,
+  `data_adaugarii` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `produs`
+--
+
+INSERT INTO `produs` (`id`, `nume_prod`, `tip`, `pret`, `stoc`, `descriere`, `poza`, `mime`, `tag`, `data_adaugarii`) VALUES
+(7, 'Ibanez GSR105EX - Chitara bass 5 corzi', '', 1000, 2, 'Caracteristici:\r\n\r\n- Fretboard din Jatoba\r\n- Bridge B15\r\n- Doza PPD5 (pasiva) in pozitia de bridge\r\n\r\nSpecificatii:\r\n\r\n- Material grif: Maple\r\n- Material corp: Poplar\r\n- Finisaj: Open pore\r\n- Fretboard: Jatoba\r\n- Inlays: White Dot\r\n- Numar taste: 22\r\n', 0x2e2f706f7a652f65383832333232306239316164643537346232653435366163623466353638624962616e657a2047535231303545582e6a7067, '', 'bass', '2023-05-14 11:16:35'),
+(8, 'Ibanez GSR180-BS', 'C', 850, 2, 'GSR Soundgears arata si se utilizeaza mai bine decat toate produsele din gama lor de pret.\r\n\r\nTip gat: GSR4 artar\r\nCorp: plop\r\nTastiera: pin tratat in Noua Zeelanda\r\nTaste: marime medie\r\nBridge: B10\r\nDoza neck: Std. J (Passive)\r\nDoza bridge: Std. J ', 0x2e2f706f7a652f33613863616566646231373237616535646633336464373965326339363033394962616e657a204753523138302d42532e6a7067, '', 'bass', '2023-05-14 11:16:35'),
+(10, 'Ibanez GRG121DX-BKF', 'F', 900, 3, 'Ibanez GRG121DX are un corp sculptat intr-una din formele cele mai recunoscute din lumea metalului, cea a RG-ului inspirat de superstraturi. \r\nAcest lucru este alaturat unui gat de artar GRG, care este atat rapid cat si plat.', 0x2e2f706f7a652f62396136373665373237343262646138616462376537366431363663306139304962616e657a2047524731323144582d424b462e6a7067, '', 'electric', '2023-05-14 11:16:35'),
+(11, 'Ibanez RG350DXZ-WH', 'F', 2000, 2, 'Modelele RG cu tremolo fac fata celor mai abuzivi utilizatori de whammy bar de pe Glob. Acum, fiind dotate cu sistemul tremolo Edge Zero II cu Zero Point System, stabilitatea acordajului este maximizata!', 0x2e2f706f7a652f35306266623930386465656234336139666633366336326261323263376536624962616e657a20524733353044585a2d57482e6a7067, '', 'electric', '2023-05-14 11:16:35'),
+(12, 'PRS SE 245 Vintage Sunburst', 'F', 3700, 2, 'Caracteristici:\r\n\r\nForma corp: SE Singlecut\r\nNr. Corzi: 6\r\nCorp: Mahon Solid\r\nTop: Artar Furniruit\r\nGat: Mahon\r\nTip Gat: Wide Fat\r\nTastiera: Palisandru\r\nNumar taste: 22\r\nScala: 24.5 in\r\nBridge: PRS Designed Stoptail Bridge\r\nTip Bridge: Fix\r\nChei: PRS ', 0x2e2f706f7a652f6436646665643935346536383131623037323635656330396534633139643630505253205345203234352056696e746167652053756e62757273742e6a7067, '', 'electric', '2023-05-14 11:16:35'),
+(13, 'Ibanez PC12MH-OPN', 'M', 670, 3, 'Seria Ibanez Performance ofera chitare cu o performanta ridicata, cu caracteristici profesionale la un pret scazut.\r\n\r\nForma corp: grand concert\r\nTastiera: nandu\r\nBridge: nandu\r\nRozeta: tortoiseshell\r\nNumar taste: 20\r\nCorzi: Ibanez IACS6C\r\n', 0x2e2f706f7a652f31666665373735353638623865316231356135646261376133386135353062664962616e657a20504331324d482d4f504e2e6a7067, '', 'classica', '2023-05-14 11:16:35'),
+(14, 'Takamine GD11MLH-NS', 'M', 800, 2, 'Takamine GD11MLH ofera un design atractiv datorita finisajului sau natural satinat. Mahonul special selectat, folosit pentru corpul chitarei ofera un sunet placut.\r\n\r\nCaracteristici:\r\n- Culoare Hardware: Crom\r\n- Tastiera: Rosewood\r\n- Nr. Corzi: 6\r\n', 0x2e2f706f7a652f386165653833383664383063616335653137356663393561646330333032386254616b616d696e6520474431314d4c482d4e532e6a7067, '', 'clasic', '2023-05-14 11:16:35'),
+(15, 'Pulse HW41-SB', 'M', 370, 4, 'Chitarele noastre raspund la exigentele  oricarui chitarist care îsi doreste un instrument de calitate, la un pret corect. Finisajele sunt, de asemenea, de exceptie, pentru a va bucura întotdeauna de un instrument frumos, cu un sunet pe masura.', 0x2e2f706f7a652f663439343933363532323635333432623134623731653031633265656661323250756c736520485734312d53422e6a7067, '', 'clasic', '2023-05-14 11:16:35');
+
+--
+-- Triggers `produs`
+--
+DELIMITER $$
+CREATE TRIGGER `adauga_produs` BEFORE INSERT ON `produs` FOR EACH ROW BEGIN
+  SET NEW.data_adaugarii = NOW();
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_produs_trigger` BEFORE UPDATE ON `produs` FOR EACH ROW BEGIN
+    SET NEW.nume_prod = IFNULL(NEW.nume_prod, OLD.nume_prod),
+        NEW.poza = IFNULL(NEW.poza, OLD.poza),
+        NEW.tip = IFNULL(NEW.tip, OLD.tip),
+        NEW.descriere = IFNULL(NEW.descriere, OLD.descriere),
+        NEW.pret = IFNULL(NEW.pret, OLD.pret),
+        NEW.stoc = IFNULL(NEW.stoc, OLD.stoc),
+        NEW.tag = IFNULL(NEW.tag, OLD.tag);
+END
+$$
+DELIMITER ;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `produs`
+--
+ALTER TABLE `produs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `produs`
+--
+ALTER TABLE `produs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
